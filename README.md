@@ -20,19 +20,19 @@ Gene expression is controlled by the chromatin domain surrounding each gene. His
 
 Predicting expression from these marks is not just a classification problem, it is a way to interpret that regulatory factor computationally. Two prior models have approached this task. DeepChrome (Singh et al., 2016) used a CNN to capture local chromatin patterns around the transcription start site. AttentiveChrome (Singh et al., 2019) extended this with a hierarchical LSTM and attention mechanism, allowing the model to weight different genomic regions differently. We have already replicated these two models [LINK to repo](https://github.com/Mariambadra/deepchrome).
 
-Both models, however, are architecturally constrained in how they model long-range interactions. A CNN has a fixed receptive field. An LSTM processes bins sequentially and struggles to directly connect distant positions. The biological reality is that enhancers can be located far upstream or downstream of the genes they regulate, and a model that cannot directly relate distal bins to the promoter region may be missing a meaningful signal.
+Both models (DeepChrome, AttentiveChrome) are designed in a way that limits how they model long-range interactions. A CNN has a fixed receptive field. An LSTM processes bins sequentially and struggles to directly connect distant positions, which is sufficient to replicate the biological reality where enhancers can be located far upstream or downstream of the genes they regulate, and a model that cannot directly draw patterns among distal bins may be missing a meaningful signal.
 
-Transformers, by design, allow every position to attend to every other position simultaneously. This makes them a natural fit for the question: can a model learn that the H3K4me1 signal in a distal bin is relevant to H3K4me3 activity at the TSS?
+Transformers are designed to allow every position to attend to every other position simultaneously. This makes them a natural fit for the question: can a model learn that the H3K4me1 signal in a distal bin is relevant to H3K4me3 activity at the TSS?
 
 ---
 
 ## 3. Model Architecture
 
-ChromeTransformer takes a (batch, 100, 5) tensor as input: 100 bins, 5 histone marks per bin, and outputs binary logits for high vs. low expression.
+ChromeTransformer takes a (batch, 100, 5) tensor as an input: 100 bins, 5 histone marks per bin, and outputs binary logits for high vs. low expression.
 
-**Input projection.** A linear layer projects the 5 histone mark values at each bin into a higher-dimensional space (d_model), followed by LayerNorm and dropout. No bias is used in the projection.
+**Input projection.** A linear layer embeds the 5 histone mark values at each bin into a higher-dimensional space (d_model), followed by LayerNorm and dropout. No bias is used in the projection.
 
-**Positional embedding.** A learned embedding table of shape (100, d_model) is added to encode bin position. Unlike sinusoidal embeddings, learned embeddings let the model discover which positional relationships matter for this specific task.
+**Positional embedding.** To preserve the sequential nature of the bins, a learned embedding table of shape (100, d_model) is added to encode bin position. Unlike sinusoidal embeddings, learned embeddings let the model discover which positional relationships matter for this specific task.
 
 **Encoder blocks.** N stacked encoder blocks, each following a Pre-LN design:
 - LayerNorm → Multi-head self-attention (batch_first) → residual connection
