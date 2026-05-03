@@ -151,11 +151,10 @@ deepchrome/
   ChromTrans-Data.ipynb                  # Dataset class
   ChromTransformer-Architecture.ipynb    # Model architecture/training/interpretation
 ```
-
----
-
 ## References
 
 - Singh, R. et al. (2016). DeepChrome: deep-learning for predicting gene expression from histone modifications. *Bioinformatics*.
-- Singh, R. et al. (2019). AttentiveChrome: attention-based neural networks for predicting gene expression from histone modifications. *NeurIPS*.
-- Roadmap Epigenomics Consortium (2015). Integrative analysis of 111 reference human epigenomes. *Nature*.
+- Singh, R. et al. (2017). AttentiveChrome: attention-based neural networks for predicting gene expression from histone modifications. *NeurIPS*.
+  
+---
+
