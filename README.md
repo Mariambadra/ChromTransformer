@@ -59,12 +59,13 @@ ChromeTransformer takes a (batch, 100, 5) tensor as an input: 100 bins, 5 histon
 
 ## 4. Results
 
-Each model is trained separately per cell type. Metrics reported are AUROC and AUPR on the held-out test set.
+Each model is trained separately per cell type. Metrics reported are AUROC (Area Under the Receiver Operating Characteristic curve) and AUPR (Area Under Precision-Recall Curve) on the held-out test set.
+AUPR was added as an evaluation metric because the test set is class-imbalanced (~28.7% positive), and AUROC can remain misleadingly high when a model struggles on the minority class. 
 
 | Model | Mean AUROC | Mean AUPR |
 |---|---|---|
-| DeepChrome (paper) | 0.8000 | — |
-| AttentiveChrome (paper) | 0.8120 | — |
+| DeepChrome (paper) | 0.8000 | _ |
+| AttentiveChrome (paper) | 0.8120 | _ |
 | ChromeTransformer (ours) | 0.8044 | 0.4916 |
 
 **Top performing cell types:**
@@ -89,13 +90,13 @@ One important caveat: Optuna hyperparameter tuning was run on E047 only, and the
 
 ## 5. Key Findings
 
-**Attention maps reflect real biology.** Across the three cell types we analyzed in depth (E123, E117, E112), the attention patterns were not random — they aligned with known chromatin features in interpretable ways.
+**Attention maps reflect real biology.** Across the three cell types we analyzed in depth (E123, E117, E112), the attention patterns were not random, they aligned with known chromatin features in interpretable ways.
 
 **Layer 1 detects, Layer 2 integrates.** Layer 1 attention is consistently spiky and concentrated on specific bins, with peaks aligned to active histone marks (H3K4me3, H3K4me1) at the TSS. Layer 2 attention spreads broadly across the gene, consistent with the model building a global representation from the local features Layer 1 identified.
 
-**Active and repressed genes are handled differently.** For high-expression genes, Layer 2 distributes attention across the full gene body — consistent with integrating enhancer signals from distal bins. For low-expression genes, Layer 2 anchors attention to the distal end of the gene (bins 0–8 in E123), where H3K27me3 repressive signal is elevated. This asymmetry is the clearest evidence that the model learned distinct regulatory strategies for active vs. silenced genes.
+**Active and repressed genes are handled differently.** For high-expression genes, Layer 2 distributes attention across the full gene body, consistent with integrating enhancer signals from distal bins. For low-expression genes, Layer 2 anchors attention to the distal end of the gene (bins 0–8 in E123), where the H3K27me3 repressive signal is elevated. This asymmetry is the clearest evidence that the model learned distinct regulatory strategies for active vs. silenced genes.
 
-**Interpretability degrades gracefully with performance.** E123 (AUROC 0.9178) shows sharp, biologically anchored attention patterns. E112 (AUROC 0.7032) shows diffuse, competing attention foci with no clear anchor — reflecting the model's genuine confusion on a cell type where chromatin signals are harder to discriminate. The attention maps track model confidence in a meaningful way.
+**Interpretability degrades gracefully with performance.** E123 (AUROC 0.9178) shows sharp, biologically anchored attention patterns. E112 (AUROC 0.7032) shows diffuse, competing attention foci with no clear anchor, reflecting the model's genuine confusion on a cell type where chromatin signals are harder to discriminate. The attention maps track model confidence in a meaningful way.
 
 **The TSS is not the whole story.** In E117, Layer 2 attention develops a dip at the TSS for high-expression genes, redistributing to flanking regions. This is consistent with enhancer-promoter communication and is the kind of pattern a CNN or sequential LSTM would be unlikely to discover.
 
@@ -127,7 +128,7 @@ data/
       test.csv
 ```
 
-Each CSV has no header and 8 columns: `GeneID | BinID | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Label`
+Each CSV has no header and 8 columns: `GeneID | BinID | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Label.`
 
 ### Training
 
@@ -147,11 +148,8 @@ Pretrained weights for all 56 cell types are available on Kaggle: `chromtransfor
 
 ```
 deepchrome/
-  chrome_dataset.py        # Dataset class
-  chrome_transformer.py    # Model architecture
-  chrome_train.py          # Training loop and Optuna tuning
-  chrome_interpret.py      # Attention extraction and visualization
-  auroc_results.csv        # Per-cell-type AUROC and AUPR results
+  ChromTrans-Data.ipynb                  # Dataset class
+  ChromTransformer-Architecture.ipynb    # Model architecture/training/interpretation
 ```
 
 ---
