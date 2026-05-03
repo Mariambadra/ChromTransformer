@@ -130,17 +130,10 @@ data/
 
 Each CSV has no header and 8 columns: `GeneID | BinID | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Label.`
 
-### Training
-
-Open `chromtransformer_train.ipynb`. Set `DATA_ROOT` to your data directory and `WEIGHTS_ROOT` to where you want checkpoints saved. Run all cells. Optuna tuning runs on E047 first, then trains one model per cell type sequentially.
-
-### Interpretation
-
-Open `chromtransformer_interpret.ipynb`. Add your saved weights as a dataset input. Run the architecture definition cells first (ChromeDataset, ChromeTransformer), then run the interpretation cells. Figures are saved to `/kaggle/working/interpret_outputs/` or your configured output directory.
 
 ### Pretrained weights
 
-Pretrained weights for all 56 cell types are available on Kaggle: `chromtransformer-weights`. Each `.pt` file contains the model state dict, hyperparameters, and test metrics for that cell type.
+Pretrained weights for all 56 cell types are available on Kaggle: [`chromtransformer-weights`](https://www.kaggle.com/datasets/mariamali12/chromtransformer-weights). Each `.pt` file contains the model state dict, hyperparameters, and test metrics for that cell type.
 
 ---
 
